@@ -15,7 +15,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
 
-        return { accessToken, refreshToken };
+        return { accessToken, newRefreshToken: refreshToken };
     } catch (error) {
         throw new ApiError(500, "Something went wrong while generating refresh and access token")
     }
@@ -147,8 +147,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1
             }
         },
         {
@@ -273,7 +273,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath);
 
     if (!avatar.url) {
-        throw new ApiError(400, "Error while uploading on avatar");
+        throw new ApiError(400, "Error while uploading avatar");
     }
 
     const user = await User.findByIdAndUpdate(
@@ -359,7 +359,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                     $size: "$subscribers"
                 },
                 channelSubscribedToCount: {
-                    $size: "subscribedTo"
+                    $size: "$subscribedTo"
                 },
                 isSubscribed: {
                     $cond: {
