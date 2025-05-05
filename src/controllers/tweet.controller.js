@@ -74,7 +74,6 @@ const updateTweet = asyncHandler(async (req, res) => {
     );
 });
 
-
 const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
 
@@ -96,7 +95,6 @@ const deleteTweet = asyncHandler(async (req, res) => {
             new ApiResponse(200, {}, "Tweet deleted successfully")
         );
 });
-
 
 export {
     createTweet,
